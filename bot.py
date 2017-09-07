@@ -128,12 +128,13 @@ def pdf_gen(bot, update, chat_data):
     pdf_canvas.setFont("Arial", 14)
     pdf_canvas.drawCentredString(18.3*cm, 28.2*cm, data_dict['Акт №'])
     #Дата
-    pdf_canvas.drawCentredString(17.0*cm, 27.45*cm, data_dict['Дата'][0])
-    pdf_canvas.drawCentredString(17.5*cm, 27.45*cm, data_dict['Дата'][1])
-    pdf_canvas.drawCentredString(18.0*cm, 27.45*cm, data_dict['Дата'][2])
-    pdf_canvas.drawCentredString(18.5*cm, 27.45*cm, data_dict['Дата'][3])
-    pdf_canvas.drawCentredString(19.0*cm, 27.45*cm, data_dict['Дата'][4])
-    pdf_canvas.drawCentredString(19.5*cm, 27.45*cm, data_dict['Дата'][5])
+    if (len(data_dict['Дата'])>=6):
+        pdf_canvas.drawCentredString(17.0*cm, 27.45*cm, data_dict['Дата'][0])
+        pdf_canvas.drawCentredString(17.5*cm, 27.45*cm, data_dict['Дата'][1])
+        pdf_canvas.drawCentredString(18.0*cm, 27.45*cm, data_dict['Дата'][2])
+        pdf_canvas.drawCentredString(18.5*cm, 27.45*cm, data_dict['Дата'][3])
+        pdf_canvas.drawCentredString(19.0*cm, 27.45*cm, data_dict['Дата'][4])
+        pdf_canvas.drawCentredString(19.5*cm, 27.45*cm, data_dict['Дата'][5])
 
     pdf_canvas.setFont("Arial", 10)
     pdf_canvas.drawString(4.5*cm, 26.55*cm, data_dict['Номер магазина'] + " " + data_dict['Тип магазина'])
