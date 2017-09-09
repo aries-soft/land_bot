@@ -29,13 +29,13 @@ from email import encoders
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
 
 REPLY_KEYBOARD = [['Номер магазина', 'Причина вызова'],
                   ['Наименование оборудования'],
-                  ['Сброс', 'Готово','E-Mail']]
+                  ['Сброс', 'Готово', 'E-Mail']]
 
 MARKUP = ReplyKeyboardMarkup(REPLY_KEYBOARD, one_time_keyboard=True, resize_keyboard=True)
 
@@ -65,31 +65,30 @@ def regular_choice(bot, update):
     text = update.message.text
     data_dict['choice'] = text
     update.message.reply_text('Введите %s' % text.lower(),
-        reply_markup=ReplyKeyboardMarkup([['Сброс','Отмена']], 
-        one_time_keyboard=True, resize_keyboard=True))
+        reply_markup=ReplyKeyboardMarkup([['Сброс', 'Отмена']], one_time_keyboard=True, resize_keyboard=True))
 
     return TYPING_REPLY
 
 def received_information(bot, update):
     text = update.message.text
     category = data_dict['choice']
-    if text.lower()!='отмена':
+    if text.lower() != 'отмена':
         data_dict[category] = text
-    if text.lower()=='сброс':
+    if text.lower() == 'сброс':
         del data_dict[category]
     del data_dict['choice']
 
-    autocomplete_data(bot,update)
+    autocomplete_data(bot, update)
 
     return CHOOSING
 
 def autocomplete_data(bot, update):
     if 'Номер магазина' in data_dict:
         if data_dict['Номер магазина'] in mag_dict:
-            num=data_dict['Номер магазина']
-            data_dict['Адрес']=mag_dict[num]['addr']
-            data_dict['Тип магазина']=mag_dict[num]['type']
-            data_dict['E-Mail']=mag_dict[num]['e-mail']
+            num = data_dict['Номер магазина']
+            data_dict['Адрес'] = mag_dict[num]['addr']
+            data_dict['Тип магазина'] = mag_dict[num]['type']
+            data_dict['E-Mail'] = mag_dict[num]['e-mail']
         else:
             if 'Адрес' in data_dict:
                 del data_dict['Адрес']
@@ -98,8 +97,8 @@ def autocomplete_data(bot, update):
             del data_dict['Адрес']
 
     now = datetime.datetime.now()
-    data_dict['Акт №']=now.strftime("%d%m%y")+"РРА"
-    data_dict['Дата']=now.strftime("%d%m%y")
+    data_dict['Акт №'] = now.strftime("%d%m%y")+"РРА"
+    data_dict['Дата'] = now.strftime("%d%m%y")
 
     update.message.reply_text("Текущие данные:"
                               "%s"
@@ -108,13 +107,12 @@ def autocomplete_data(bot, update):
                               reply_markup=MARKUP)
 
 def reset_data(bot, update):
-    data_dict = dict.fromkeys(['Акт №','Дата','Номер магазина','Тип магазина','Адрес',
-                               'Причина вызова','Наименование оборудования'],"")
+    data_dict = dict.fromkeys(['Акт №', 'Дата', 'Номер магазина', 'Тип магазина', 'Адрес',
+                               'Причина вызова', 'Наименование оборудования'], "")
     update.message.reply_text("Текущие данные:"
                               "%s"
                               "Введите данные или получите pdf"
-                              % facts_to_str(),
-                              reply_markup=MARKUP) 
+                              % facts_to_str(), reply_markup=MARKUP) 
     return CHOOSING
 
 def pdf_gen(bot, update, chat_data):
@@ -128,7 +126,7 @@ def pdf_gen(bot, update, chat_data):
     pdf_canvas.setFont("Arial", 14)
     pdf_canvas.drawCentredString(18.3*cm, 28.2*cm, data_dict['Акт №'])
     #Дата
-    if (len(data_dict['Дата'])>=6):
+    if len(data_dict['Дата']) >= 6:
         pdf_canvas.drawCentredString(17.0*cm, 27.45*cm, data_dict['Дата'][0])
         pdf_canvas.drawCentredString(17.5*cm, 27.45*cm, data_dict['Дата'][1])
         pdf_canvas.drawCentredString(18.0*cm, 27.45*cm, data_dict['Дата'][2])
@@ -137,7 +135,8 @@ def pdf_gen(bot, update, chat_data):
         pdf_canvas.drawCentredString(19.5*cm, 27.45*cm, data_dict['Дата'][5])
 
     pdf_canvas.setFont("Arial", 10)
-    pdf_canvas.drawString(4.5*cm, 26.55*cm, data_dict['Номер магазина'] + " " + data_dict['Тип магазина'])
+    pdf_canvas.drawString(4.5*cm, 26.55*cm, data_dict['Номер магазина'] + " " + 
+                          data_dict['Тип магазина'])
     pdf_canvas.drawString(13.2*cm, 26.55*cm, data_dict['Адрес'])
     pdf_canvas.drawString(4.5*cm, 25.4*cm, "Романенко Р.А.")
     pdf_canvas.drawString(4.5*cm, 24.4*cm, data_dict['Причина вызова'])
@@ -155,6 +154,7 @@ def pdf_gen(bot, update, chat_data):
     return CHOOSING
 
 def send_email(bot, update, chat_data):
+    """printfon"""
     frommail = 'aries-soft@mail.ru'
     tomail = data_dict['E-Mail']
 
@@ -254,12 +254,7 @@ def main():
 
     # Start the Bot
     updater.start_polling()
-
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
-
 
 if __name__ == '__main__':
     main()
